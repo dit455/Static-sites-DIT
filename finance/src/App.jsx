@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
-  Menu, X, ChevronLeft, ChevronRight, ChevronDown,
+  Menu, X, ChevronLeft, ChevronRight,
   Bell, Briefcase, BookOpen, Link2, FileText,
   BarChart2, TrendingUp, ShoppingBag, Server, Landmark,
   FileCheck, Building, Shield, Home, Leaf, Zap, Globe,
-  Search, Phone, Mail, Printer, ExternalLink,
+  Search, Phone, Mail, MapPin,
 } from "lucide-react";
 import "./App.css";
 
@@ -16,227 +16,68 @@ import secretary from "./assets/Secretary.jpg";
 import logo from "./assets/header_logo.png";
 import emblem from "./assets/emblem.png";
 
-
-/* ════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════
    DATA
-   ════════════════════════════════════════════════════════════ */
-
+══════════════════════════════════════════ */
 const notices = [
-  {
-    id: 1,
-    date: "13-05-2026",
-    text: "Grant of enhanced rate of DA to the employees who are continuing to draw their Pay scale/Grade Pay as per 6th CPC - Reg.",
-    isNew: true,
-  },
-  {
-    id: 2,
-    date: "13-05-2026",
-    text: "Grant of Dearness Relief to the UT Government Pensioners/Family Pensioners - Revised rate effective from 01.01.2026",
-    isNew: true,
-  },
-  {
-    id: 3,
-    date: "03-05-2026",
-    text: "Payment of Dearness Allowance to the UT Government Employees - Revised rate effective from 01.01.2026 - Orders - Communicated.",
-    isNew: true,
-  },
-  {
-    id: 4,
-    date: "27-03-2026",
-    text: "Functioning of Finance Department and DAT during the weekly holidays in view of the closure of the Current Financial Year 2025-26 - Reg.",
-    isNew: true,
-  },
-  {
-    id: 5,
-    date: "25-03-2026",
-    text: "Memorandum/Representations on Terms of Reference of 8th Central Pay Commission called for by MHA - Reg.",
-    isNew: true,
-  },
-  {
-    id: 6,
-    date: "24-03-2026",
-    text: "Streamlining of file referrals - Avoidance of submission of multiple/new files on ongoing or continuing proposals - Instructions - Issued.",
-    isNew: true,
-  },
-  {
-    id: 7,
-    date: "19-03-2026",
-    text: "Submission of expenditure proposals requiring concurrence of Finance Department well in advance in view of the closure of Financial Year 2025-26 - Instructions - Issued.",
-    isNew: false,
-  },
-  {
-    id: 8,
-    date: "11-03-2026",
-    text: "Promotion of Superintendents to the post of Junior Accounts Officer on Regular basis - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 9,
-    date: "23-02-2026",
-    text: "Transfer and posting / additional charges of Senior Accounts Officers and Junior Accounts Officers - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 10,
-    date: "23-02-2026",
-    text: "Transfer and Posting of Junior Accounts Officer - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 11,
-    date: "03-02-2026",
-    text: "Promotion to the post of Deputy Director of Accounts & Treasuries/Senior Accounts Officer on regular basis - Posting Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 12,
-    date: "27-01-2026",
-    text: "Filling up of the vacant posts of Junior Accounts Officers on regular basis - Service Particulars and APARs called for.",
-    isNew: false,
-  },
-  {
-    id: 13,
-    date: "22-01-2026",
-    text: "Payment of arrears of 'Special Allowance for Child Care for Women with Disabilities' as per Seventh CPC recommendations.",
-    isNew: false,
-  },
-  {
-    id: 14,
-    date: "05-01-2026",
-    text: "Procurement of Goods and Services through GeM Portal - Advisories received from Chief Buyer Officer, GEM emphasizing the avoidance of restrictive clauses in the Bids.",
-    isNew: false,
-  },
-  {
-    id: 15,
-    date: "30-12-2025",
-    text: "Service particulars / APARs in r/o JAOs - Called for.",
-    isNew: false,
-  },
-  {
-    id: 16,
-    date: "12-12-2025",
-    text: "Transfer and Posting of Junior Accounts Officer - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 17,
-    date: "11-12-2025",
-    text: "Examining the feasibility of extending the revised pay scales as per 7th CPC recommendations to the PSUs / Autonomous Bodies / Corporations / Societies.",
-    isNew: false,
-  },
-  {
-    id: 18,
-    date: "01-12-2025",
-    text: "Engagement of Thiru. U. Ilango, DDAT (Retired) as Consultant designated as OSD (Budget) in Finance Department (Budget), Puducherry.",
-    isNew: false,
-  },
-  {
-    id: 19,
-    date: "25-11-2025",
-    text: "Additional charge of Budget Officer duties to the DDAT/SAO - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 20,
-    date: "19-11-2025",
-    text: "Regularization of upgraded pay scales implemented by Govt. of Puducherry based on the recommendation of Single Member Committee.",
-    isNew: false,
-  },
-  {
-    id: 21,
-    date: "19-11-2025",
-    text: "Grant of enhanced rate of DA to the employees drawing their pay as per 6th CPC recommendations - Orders - Communicated.",
-    isNew: false,
-  },
-  {
-    id: 22,
-    date: "28-10-2025",
-    text: "FD - Revision of wages w.e.f.1.7.2025 for FTCLRs drawing wages as per 7CPC recommendations - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 23,
-    date: "28-10-2025",
-    text: "FD - Revision of wages w.e.f.1.7.2025 for PTCLRs drawing wages as per 7CPC recommendations - Orders - Issued.",
-    isNew: false,
-  },
-  {
-    id: 24,
-    date: "27-10-2025",
-    text: "Final Seniority List of Stores Superintendents.",
-    isNew: false,
-  },
-  {
-    id: 25,
-    date: "22-10-2025",
-    text: "GoI's order on refund of employees contribution in the event of death/disablement/invalidation of NPS subscribers prior to NPS Rules 2021 - Communicated.",
-    isNew: false,
-  },
+  { id: 1,  date: "13-05-2026", text: "Grant of enhanced rate of DA to employees drawing Pay scale/Grade Pay as per 6th CPC - Reg.", isNew: true },
+  { id: 2,  date: "13-05-2026", text: "Grant of Dearness Relief to UT Government Pensioners/Family Pensioners - Revised rate effective from 01.01.2026", isNew: true },
+  { id: 3,  date: "03-05-2026", text: "Payment of Dearness Allowance to UT Government Employees - Revised rate effective from 01.01.2026 - Orders - Communicated.", isNew: true },
+  { id: 4,  date: "27-03-2026", text: "Functioning of Finance Department and DAT during weekly holidays in view of closure of Financial Year 2025-26 - Reg.", isNew: true },
+  { id: 5,  date: "25-03-2026", text: "Memorandum/Representations on Terms of Reference of 8th Central Pay Commission called for by MHA - Reg.", isNew: true },
+  { id: 6,  date: "24-03-2026", text: "Streamlining of file referrals - Avoidance of multiple/new files on ongoing proposals - Instructions - Issued.", isNew: true },
+  { id: 7,  date: "19-03-2026", text: "Submission of expenditure proposals requiring concurrence of Finance Department well in advance - Instructions - Issued.", isNew: false },
+  { id: 8,  date: "11-03-2026", text: "Promotion of Superintendents to the post of Junior Accounts Officer on Regular basis - Orders - Issued.", isNew: false },
+  { id: 9,  date: "23-02-2026", text: "Transfer and posting / additional charges of Senior Accounts Officers and Junior Accounts Officers - Orders - Issued.", isNew: false },
+  { id: 10, date: "23-02-2026", text: "Transfer and Posting of Junior Accounts Officer - Orders - Issued.", isNew: false },
+  { id: 11, date: "03-02-2026", text: "Promotion to Deputy Director of Accounts & Treasuries/Senior Accounts Officer on regular basis - Orders - Issued.", isNew: false },
+  { id: 12, date: "27-01-2026", text: "Filling up of vacant posts of Junior Accounts Officers on regular basis - Service Particulars and APARs called for.", isNew: false },
+  { id: 13, date: "22-01-2026", text: "Payment of arrears of Special Allowance for Child Care for Women with Disabilities as per Seventh CPC recommendations.", isNew: false },
+  { id: 14, date: "05-01-2026", text: "Procurement of Goods and Services through GeM Portal - Advisories from Chief Buyer Officer.", isNew: false },
+  { id: 15, date: "30-12-2025", text: "Service particulars / APARs in r/o JAOs - Called for.", isNew: false },
 ];
 
 const officers = [
-  {
-    id: 1,
-    name: "Hon'ble Lt. Governor",
-    image: governor,
-  },
-  {
-    id: 2,
-    name: "Hon'ble Chief Minister",
-    image: cm,
-  },
-  {
-    id: 3,
-    name: "Secretary (Finance)",
-    image: secretary,
-  },
+  { id: 1, name: "Hon'ble Lt. Governor",   image: governor },
+  { id: 2, name: "Hon'ble Chief Minister",  image: cm },
+  { id: 3, name: "Secretary (Finance)",     image: secretary },
 ];
 
 const adminOrders = [
-  { text: "Secretary"},
+  { text: "Secretary" },
   { text: "Sections of Finance Department" },
   { text: "Deputy Secretary" },
   { text: "Under Secretary" },
   { text: "Budget Officer" },
-  { text: "Dy. Director(Ways & Means)" },
-  { text: "Hon'ble Lt. Governor"},
-  { text: "Hon'ble Chief Minister"},
+  { text: "Dy. Director (Ways & Means)" },
+  { text: "Hon'ble Lt. Governor" },
+  { text: "Hon'ble Chief Minister" },
 ];
 
 const budgetDocs = [
-  "Hon'ble LG Speech 2025-26", "Hon'ble CM Budget Speech", "Budget Estimate 2025-26",
-  "Revised Estimate 2024-25", "Vote on Account 2024-25", "Demand for Grants 2023-24",
-  "Hon'ble LG Speech 2021-22", "Demand for Grants 2021-22",
+  "Hon'ble LG Speech 2025-26",
+  "Hon'ble CM Budget Speech",
+  "Budget Estimate 2025-26",
+  "Revised Estimate 2024-25",
+  "Vote on Account 2024-25",
+  "Demand for Grants 2023-24",
+  "Hon'ble LG Speech 2021-22",
+  "Demand for Grants 2021-22",
 ];
-
-
 
 const partnerPortals = [
-  { label: "IFMS Portal",       Icon: BarChart2  },
-  { label: "PFMS",              Icon: TrendingUp  },
-  { label: "GeM Portal",        Icon: ShoppingBag },
-  { label: "NIC",               Icon: Server      },
-  { label: "RBI",               Icon: Landmark    },
-  { label: "CAG India",         Icon: FileCheck   },
-  { label: "Min. of Finance",   Icon: Building    },
-  { label: "MHA",               Icon: Shield      },
-  { label: "HUDCO",             Icon: Home        },
-  { label: "NABARD",            Icon: Leaf        },
-  { label: "REC Limited",       Icon: Zap         },
-  { label: "Puducherry Govt",   Icon: Globe       },
-];
-
-const slides = [
-  {
-    image: slide1,
-    title: "Finance Department",
-    sub: "Government of Puducherry",
-  },
-  {
-    image: slide2,
-    title: "Governance",
-    sub: "Serving the people with integrity",
-  },
+  { label: "IFMS Portal",     Icon: BarChart2  },
+  { label: "PFMS",            Icon: TrendingUp  },
+  { label: "GeM Portal",      Icon: ShoppingBag },
+  { label: "NIC",             Icon: Server      },
+  { label: "RBI",             Icon: Landmark    },
+  { label: "CAG India",       Icon: FileCheck   },
+  { label: "Min. of Finance", Icon: Building    },
+  { label: "MHA",             Icon: Shield      },
+  { label: "HUDCO",           Icon: Home        },
+  { label: "NABARD",          Icon: Leaf        },
+  { label: "REC Limited",     Icon: Zap         },
+  { label: "Puducherry Govt", Icon: Globe       },
 ];
 
 const navItems = [
@@ -249,304 +90,261 @@ const navItems = [
   { label: "Contact Us" },
 ];
 
-
-
 const infoCards = [
   {
-    Icon: Bell,     color: "var(--primary)",   borderTop: "4px solid var(--primary)",
+    Icon: Bell, color: "var(--primary)", borderTop: "4px solid var(--primary)",
     title: "BEAMS User Manual",
-    items: [
-      "Admin Module",
-      "Controlling Officer(CO) to Drawing and Disbursing Officer(DDO) Module",
-      "Drawing and Disbursing Officer(DDO) Module",
-      "BEAMS Standard Operating Procedure",
-    ],
+    items: ["Admin Module","Controlling Officer (CO) to DDO Module","Drawing and Disbursing Officer (DDO) Module","BEAMS Standard Operating Procedure"],
   },
   {
     Icon: Briefcase, color: "var(--secondary)", borderTop: "4px solid var(--secondary)",
     title: "Employees Corner",
-    items: [
-      "Recruitment Rules",
-      "Final Seniority List",
-    ],
+    items: ["Recruitment Rules","Final Seniority List"],
   },
   {
-    Icon: BookOpen, color: "var(--accent)",    borderTop: "4px solid var(--accent)",
+    Icon: BookOpen, color: "var(--accent)", borderTop: "4px solid var(--accent)",
     title: "Documents",
-    items: [
-      "FD Compendium",
-      "GFR",
-      "Manual for Procurement of Goods 2024",
-      "Manual for Procurement of Consultancy and Other Services",
-      "Manual for Procurement of Works",
-    ],
+    items: ["FD Compendium","GFR","Manual for Procurement of Goods 2024","Manual for Procurement of Consultancy and Other Services","Manual for Procurement of Works"],
   },
   {
-    Icon: Link2,    color: "var(--highlight)", borderTop: "4px solid var(--highlight)",
+    Icon: Link2, color: "var(--highlight)", borderTop: "4px solid var(--highlight)",
     title: "Useful Links",
-    items: [
-      "State Portal(py.gov.in)",
-      "DAT",
-      "Economics & Statistics",
-      "e-Salary",
-      "BEAMS",
-    ],
+    items: ["State Portal (py.gov.in)","DAT","Economics & Statistics","e-Salary","BEAMS"],
   },
 ];
 
-const quickLinks = [
-  "Home", "About Us", "Organization Chart", "Sections", "Who's Who",
-  "Notice Board", "Budget Documents", "Downloads", "RTI", "Contact Us",
-  "Sitemap", "Accessibility Statement", "Privacy Policy", "Disclaimer",
+const slideData = [
+  {
+    title:   "Governance",
+    subtitle:"Serving the people with integrity",
+    para:    "The Finance Department of the Government of Puducherry is responsible for sound fiscal management, budget preparation, financial oversight, and policy implementation across all departments of the Union Territory.",
+    image:   slide1,
+    bullets: ["Budget Planning & Execution","Revenue Management","Expenditure Control","Pay & Accounts Administration","Financial Oversight & Audit"],
+  },
+  {
+    title:   "Transparency",
+    subtitle:"Building trust through accountability",
+    para:    "We ensure transparent utilization of public funds through robust monitoring systems, timely audits, and digital financial management solutions like BEAMS and IFMS for effective governance.",
+    image:   slide2,
+    bullets: ["BEAMS Digital Platform","IFMS Integration","Real-time Audit Trails","Timely Financial Reporting","Public Fund Accountability"],
+  },
 ];
 
-const relatedSites = [
-  { n: "Government of Puducherry",               u: "py.gov.in"       },
-  { n: "Directorate of Accounts & Treasuries",   u: "dat.py.gov.in"   },
-  { n: "National Portal of India",               u: "india.gov.in"    },
-  { n: "Ministry of Finance, GoI",               u: "finmin.gov.in"   },
-  { n: "PFMS Portal",                            u: "pfms.nic.in"     },
-  { n: "GeM Portal",                             u: "gem.gov.in"      },
-  { n: "RBI Official Website",                   u: "rbi.org.in"      },
-  { n: "CAG India",                              u: "cag.gov.in"      },
-  { n: "NIC",                                    u: "nic.in"          },
-  { n: "Digital India",                          u: "digitalindia.gov.in" },
+const footerCols = [
+  { heading: "About Us",   links: ["Introduction","Vision & Mission","Organisation Chart","Who's Who","Sections","Finance Secretary"] },
+  { heading: "Services",   links: ["Budget Documents","BEAMS Portal","e-Salary","DAT Portal","GeM Portal","PFMS"] },
+  { heading: "Resources",  links: ["Download Forms","GFR Manual","Procurement Manual","FD Compendium","RTI","FAQ"] },
+  { heading: "Help",       links: ["Contact Us","Feedback","Accessibility Statement","Privacy Policy","Disclaimer","Site Map"] },
 ];
 
-
-
-/* ════════════════════════════════════════════════════════════
-   COMPONENTS
-   ════════════════════════════════════════════════════════════ */
-
-
-
-/* ── HEADER ──────────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   HEADER  — centred layout, nav + search on same line on right
+══════════════════════════════════════════ */
 function Header() {
+  const [active, setActive]         = useState("Home");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <>
-      <div className="site-header">
+      <header className="site-header">
+        {/* LEFT: emblem + titles + logo — centred block */}
         <div className="site-header__left">
-          <img
-            src={emblem}
-            alt="Emblem of India"
-            className="site-header__emblem"
-          />
+          <img src={emblem} alt="Emblem of India" className="site-header__emblem" />
+          <div className="site-header__titles">
+            <div className="site-header__gov-label">GOVERNMENT OF INDIA</div>
+            <div className="site-header__dept-name">Finance Department</div>
+            <div className="site-header__state-name">Government of Puducherry</div>
+            <div className="site-header__multilang">நிதித்துறை — புதுச்சேரி அரசு</div>
+          </div>
+          <img src={logo} alt="Puducherry Logo" className="site-logo" />
+        </div>
 
-          <div>
-            <div className="site-header__gov-label">
-              GOVERNMENT OF INDIA
-            </div>
+        {/* RIGHT: nav links ROW 1 — search bar ROW 2 */}
+        <div className="site-header__right">
+          {/* Row 1: nav links */}
+          <nav aria-label="Main navigation">
+            <ul className="header-nav__list desktop-only">
+              {navItems.map((item) => (
+                <li key={item.label}>
+                  <button
+                    className={`header-nav__btn${active === item.label ? " active" : ""}`}
+                    onClick={() => setActive(item.label)}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-            <div className="site-header__dept-name">
-              Finance Department
-            </div>
-
-            <div className="site-header__state-name">
-              Government of Puducherry
-            </div>
-
-            <div className="site-header__multilang">
-              நிதித்துறை — புதுச்சேரி அரசு
-            </div>
+          {/* Row 2: search bar */}
+          <div className="header-search desktop-only" role="search">
+            <input className="header-search__input" type="search" placeholder="Search..." aria-label="Site search" />
+            <button className="header-search__btn" aria-label="Submit search"><Search size={14} /></button>
           </div>
 
-          <img
-            src={logo}
-            alt="Puducherry Logo"
-            className="site-logo"
-          />
+          {/* Mobile hamburger */}
+          <button
+            className="navbar__hamburger mobile-only"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-      </div>
+      </header>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="header-mobile-menu">
+          {navItems.map((item) => (
+            <div key={item.label} className="navbar__mobile-item"
+              onClick={() => { setActive(item.label); setMobileOpen(false); }}>
+              {item.label}
+            </div>
+          ))}
+          <div className="mobile-search">
+            <input className="mobile-search__input" type="search" placeholder="Search..." />
+            <button className="mobile-search__btn"><Search size={14} /></button>
+          </div>
+        </div>
+      )}
 
       <div className="grad-divider" />
     </>
   );
 }
 
-/* ── NAVBAR ──────────────────────────────────────────────── */
-function Navbar() {
-  const [open, setOpen]     = useState(false);
-  const [active, setActive] = useState("Home");
-
-  return (
-    <nav className="navbar" aria-label="Main navigation">
-      <div className="navbar__inner">
-        {/* Desktop list */}
-        <ul className="navbar__list desktop-only" role="menubar">
-          {navItems.map((item) => (
-            <li key={item.label} className="nav-item" role="none">
-              <button
-                className={`nav-item__btn${active === item.label ? " active" : ""}`}
-                onClick={() => setActive(item.label)}
-                role="menuitem"
-                aria-haspopup={!!item.children}
-              >
-                {item.label}
-                {item.children && <ChevronDown size={13} aria-hidden="true" />}
-              </button>
-              {item.children && (
-                <div className="dropdown" role="menu">
-                  {item.children.map((c) => (
-                    <a href="#" key={c} className="dropdown__link" role="menuitem">{c}</a>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        {/* Hamburger */}
-        <button
-          className="navbar__hamburger mobile-only"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
-        {/* Search */}
-        <div className="navbar__search desktop-only" role="search">
-          <input
-            className="navbar__search-input"
-            type="search"
-            placeholder="Search..."
-            aria-label="Site search"
-          />
-          <button className="navbar__search-btn" aria-label="Submit search">
-            <Search size={14} />
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <nav className="navbar__mobile-menu" aria-label="Mobile navigation">
-          {navItems.map((item) => (
-            <div key={item.label} className="navbar__mobile-item">{item.label}</div>
-          ))}
-        </nav>
-      )}
-    </nav>
-  );
-}
-
-/* ── HERO SLIDER ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   HERO SLIDER  — dark violet / purple background
+══════════════════════════════════════════ */
 function HeroSlider() {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent]   = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const expandRef               = useRef(null);
 
   useEffect(() => {
-    const iv = setInterval(() => setCurrent((p) => (p + 1) % slides.length), 4000);
+    setExpanded(false);
+    const iv = setInterval(() => {
+      setCurrent((p) => (p + 1) % slideData.length);
+      setExpanded(false);
+    }, 5000);
     return () => clearInterval(iv);
-  }, []);
+  }, [current]);
 
-  const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
-  const next = () => setCurrent((p) => (p + 1) % slides.length);
+  const prev = () => { setCurrent((p) => (p - 1 + slideData.length) % slideData.length); setExpanded(false); };
+  const next = () => { setCurrent((p) => (p + 1) % slideData.length); setExpanded(false); };
+  const s    = slideData[current];
 
-  const s = slides[current];
+  const handleLearnMore = () => {
+    setExpanded(true);
+    setTimeout(() => expandRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
 
   return (
-    <div className="hero-slider" aria-label="Image slider" aria-roledescription="carousel">
-      <div
-        className="hero-slide slide-active"
-        key={current}
-        style={{
-          backgroundImage: `url(${s.image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-      }}
-        aria-label={`Slide ${current + 1} of ${slides.length}: ${s.title}`}
-        role="group"
-        aria-roledescription="slide"
-      >
-        <div className="hero-slide__dot-pattern" aria-hidden="true" />
-        <div className="hero-slide__overlay"     aria-hidden="true" />
-        <div className="hero-slide__content">
-          
-          <h1 className="hero-slide__title">{s.title}</h1>
-          <p  className="hero-slide__subtitle">{s.sub}</p>
+    <>
+      <section className="hero-slider" aria-label="Hero slider">
+        <button className="hero-slider__arrow hero-slider__arrow--left" onClick={prev} aria-label="Previous"><ChevronLeft size={22} /></button>
+
+        <div className="hero-slider__inner slide-active" key={current}>
+          {/* LEFT text */}
+          <div className="hero-slider__text">
+            
+            <h1 className="hero-slider__title">{s.title}</h1>
+            <p className="hero-slider__subtitle">{s.subtitle}</p>
+            <p className="hero-slider__para">{s.para}</p>
+            <button className="hero-slider__btn" onClick={handleLearnMore}>Learn More</button>
+          </div>
+          {/* RIGHT image */}
+          <div className="hero-slider__img-wrap">
+            <img src={s.image} alt={s.title} className="hero-slider__img" />
+          </div>
         </div>
-        <div className="hero-slide__bottom-bar" aria-hidden="true" />
-      </div>
 
-      <button className="hero-slider__arrow hero-slider__arrow--left"  onClick={prev} aria-label="Previous slide"><ChevronLeft  size={20} /></button>
-      <button className="hero-slider__arrow hero-slider__arrow--right" onClick={next} aria-label="Next slide"><ChevronRight size={20} /></button>
+        <button className="hero-slider__arrow hero-slider__arrow--right" onClick={next} aria-label="Next"><ChevronRight size={22} /></button>
 
-      <div className="hero-slider__dots" role="tablist" aria-label="Slide indicators">
-        {slides.map((_, i) => (
-          <div
-            key={i}
-            className={`hero-slider__dot${i === current ? " active" : ""}`}
-            onClick={() => setCurrent(i)}
-            role="tab"
-            aria-selected={i === current}
-            aria-label={`Go to slide ${i + 1}`}
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && setCurrent(i)}
-          />
-        ))}
-      </div>
-    </div>
+        {/* Dots */}
+        <div className="hero-slider__dots">
+          {slideData.map((_, i) => (
+            <button key={i}
+              className={`hero-slider__dot${i === current ? " active" : ""}`}
+              onClick={() => { setCurrent(i); setExpanded(false); }}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
+        </div>
+
+        <div className="hero-slider__bottom-bar" />
+      </section>
+
+      {/* Inline expanded panel */}
+      {expanded && (
+        <section ref={expandRef} className="hero-expand fade-section" aria-live="polite">
+          <div className="hero-expand__inner">
+            <div className="hero-expand__text">
+              <span className="hero-expand__badge">About — {s.title}</span>
+              <h2 className="hero-expand__title">{s.title}</h2>
+              <p className="hero-expand__para">{s.para}</p>
+              <ul className="hero-expand__list">
+                {s.bullets.map((b) => <li key={b}>{b}</li>)}
+              </ul>
+              <button className="hero-expand__close" onClick={() => setExpanded(false)}>✕ Close</button>
+            </div>
+            <div className="hero-expand__img-wrap">
+              <img src={s.image} alt={s.title} className="hero-expand__img" />
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }
 
-/* ── WHAT'S NEW ──────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   WHAT'S NEW
+══════════════════════════════════════════ */
 function WhatsNew() {
   const doubled = [...notices, ...notices];
   return (
     <div className="whats-new">
       <div className="sec-header">
         <h2>📢 What's New</h2>
-        <div
-          className="accent-bar"
-          style={{ background: "linear-gradient(90deg,var(--primary),var(--secondary))" }}
-        />
+        <div className="accent-bar" style={{ background: "linear-gradient(90deg,var(--primary),var(--secondary))" }} />
       </div>
-
-      <div className="news-scroll-wrap" aria-label="Scrolling notice board" aria-live="polite">
+      <div className="news-scroll-wrap">
         <div className="news-track">
           {doubled.map((n, i) => (
             <div key={i} className="news-card">
               <div className="news-card__meta">
                 <div className="news-card__date">{n.date}</div>
-                {n.isNew && <div className="news-card__new-badge">NEW</div>}
+                {n.isNew && <div className="news-card__badge">NEW</div>}
               </div>
               <div className="news-card__text">{n.text}</div>
             </div>
           ))}
         </div>
       </div>
-
-      <button className="whats-new__view-all">View All Notices →</button>
+      <button className="view-all-btn">View All Notices →</button>
     </div>
   );
 }
 
-/* ── DIGNITARIES ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   DIGNITARIES
+══════════════════════════════════════════ */
 function Dignitaries() {
   return (
     <div className="dignitaries">
       <div className="sec-header">
         <h2>👤 Dignitaries &amp; Officers</h2>
-        <div
-          className="accent-bar"
-          style={{ background: "linear-gradient(90deg,var(--secondary),var(--accent))" }}
-        />
+        <div className="accent-bar" style={{ background: "linear-gradient(90deg,var(--secondary),var(--accent))" }} />
       </div>
       <div className="dignitaries__list">
         {officers.map((o) => (
           <div key={o.id} className="officer-card" tabIndex={0}>
-            <img
-              src={o.image}
-              alt={o.name}
-             className="officer-card__image"
-            />
-            <div>
-              <div className="officer-card__name">{o.name}</div>
-              <div className="officer-card__designation">{o.designation}</div>
-              <div className="officer-card__dept">{o.dept}</div>
-            </div>
+            <img src={o.image} alt={o.name} className="officer-card__img" />
+            <div className="officer-card__name">{o.name}</div>
           </div>
         ))}
       </div>
@@ -554,56 +352,47 @@ function Dignitaries() {
   );
 }
 
-/* ── ADMINISTRATION ──────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   ADMINISTRATION
+══════════════════════════════════════════ */
 function Administration() {
   return (
     <div className="administration">
       <div className="sec-header">
         <h2>⚙️ Administration</h2>
-        <div
-          className="accent-bar"
-          style={{ background: "linear-gradient(90deg,var(--primary),var(--accent))" }}
-        />
+        <div className="accent-bar" style={{ background: "linear-gradient(90deg,var(--primary),var(--accent))" }} />
       </div>
-      <div className="admin-orders-list">
+      <div className="admin-list">
         {adminOrders.map((o, i) => (
-          <div key={i} className="admin-order" tabIndex={0}>
-            <span className="admin-order__arrow" aria-hidden="true">›</span>
-            <div>
-              <div className="admin-order__text">{o.text}</div>
-              {o.date && <div className="admin-order__date">[{o.date}]</div>}
-            </div>
+          <div key={i} className="admin-item" tabIndex={0}>
+            <span className="admin-item__arrow">›</span>
+            <span className="admin-item__text">{o.text}</span>
           </div>
         ))}
       </div>
-      <a href="#" className="admin__view-all">View All Administration Orders →</a>
+      <a href="#" className="view-all-link">View All Administration Orders →</a>
     </div>
   );
 }
 
-/* ── BUDGET ──────────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   BUDGET
+══════════════════════════════════════════ */
 function Budget() {
   return (
     <div className="budget">
       <div className="sec-header">
         <h2>📊 Budget</h2>
-        <div
-          className="accent-bar"
-          style={{ background: "linear-gradient(90deg,var(--secondary),var(--highlight))" }}
-        />
+        <div className="accent-bar" style={{ background: "linear-gradient(90deg,var(--secondary),var(--highlight))" }} />
       </div>
-
-    
-
-      {/* Doc list */}
-      <div className="budget-docs-list">
+      <div className="budget-list">
         {budgetDocs.map((doc) => (
-          <div key={doc} className="budget-doc-card info-card" tabIndex={0}>
-            <div className="budget-doc-card__left">
-              <FileText size={16} color="var(--accent)" aria-hidden="true" />
-              <span className="budget-doc-card__name">{doc}</span>
+          <div key={doc} className="budget-item" tabIndex={0}>
+            <div className="budget-item__left">
+              <FileText size={15} color="var(--accent)" />
+              <span className="budget-item__name">{doc}</span>
             </div>
-            <span className="budget-doc-card__badge">PDF</span>
+            <span className="budget-item__badge">PDF</span>
           </div>
         ))}
       </div>
@@ -611,33 +400,31 @@ function Budget() {
   );
 }
 
-/* ── INFO GRID ───────────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   INFO GRID
+══════════════════════════════════════════ */
 function InfoGrid() {
   return (
     <section className="info-grid-section fade-section">
-      <div className="info-grid__header">
-        <h2 className="info-grid__title">Key Services &amp; Information</h2>
-        <div className="info-grid__underline" />
+      <div className="section-title-wrap">
+        <h2 className="section-title">Key Services &amp; Information</h2>
+        <div className="section-underline" />
       </div>
-      <div className="info-grid__grid">
+      <div className="info-grid">
         {infoCards.map((c, i) => (
-          <div
-            key={i}
-            className="info-grid-card"
-            style={{ borderTop: c.borderTop }}
-          >
-            <div className="info-grid-card__header" style={{ background: c.color }}>
-              <c.Icon size={20} color="#fff" aria-hidden="true" />
-              <span className="info-grid-card__header-title">{c.title}</span>
+          <div key={i} className="info-card" style={{ borderTop: c.borderTop }}>
+            <div className="info-card__head" style={{ background: c.color }}>
+              <c.Icon size={20} color="#fff" />
+              <span className="info-card__head-title">{c.title}</span>
             </div>
-            <div className="info-grid-card__body">
+            <div className="info-card__body">
               {c.items.map((item, j) => (
-                <div key={j} className="info-grid-card__item" tabIndex={0}>
-                  <span className="info-grid-card__bullet" aria-hidden="true">•</span>
-                  <span className="info-grid-card__item-text">{item}</span>
+                <div key={j} className="info-card__item" tabIndex={0}>
+                  <span className="info-card__bullet">•</span>
+                  <span className="info-card__item-text">{item}</span>
                 </div>
               ))}
-              <a href="#" className="info-grid-card__view-all">View All →</a>
+              <a href="#" className="info-card__view-all">View All →</a>
             </div>
           </div>
         ))}
@@ -646,16 +433,18 @@ function InfoGrid() {
   );
 }
 
-/* ── PARTNER LOGOS ───────────────────────────────────────── */
+/* ══════════════════════════════════════════
+   PARTNER LOGOS
+══════════════════════════════════════════ */
 function PartnerLogos() {
   const doubled = [...partnerPortals, ...partnerPortals];
   return (
-    <section className="partner-section" aria-label="Partner portals">
+    <section className="partner-section">
       <div className="logo-wrap">
         <div className="logo-track">
           {doubled.map(({ label, Icon }, i) => (
             <div key={i} className="logo-card" tabIndex={0} aria-label={label}>
-              <Icon size={28} className="logo-card__icon" aria-hidden="true" />
+              <Icon size={26} className="logo-card__icon" />
               <span className="logo-card__label">{label}</span>
             </div>
           ))}
@@ -665,141 +454,93 @@ function PartnerLogos() {
   );
 }
 
-
-
-/* ── FOOTER ──────────────────────────────────────────────── */
-
-
+/* ══════════════════════════════════════════
+   FOOTER  — professional multi-column
+══════════════════════════════════════════ */
 function Footer() {
   return (
-    <footer className="bg-[#0b1f3a] text-white pt-8 pb-5 mt-10">
-  <div className="max-w-7xl mx-auto px-4 text-center">
+    <footer className="site-footer">
+      {/* TOP: 5-column grid */}
+      <div className="footer-top">
+        {/* Brand col */}
+        <div className="footer-brand">
+          <div className="footer-brand__logos">
+            
+          </div>
+          <div className="footer-brand__name">Finance Department</div>
+          <div className="footer-brand__sub">Government of Puducherry</div>
+          <div className="footer-brand__tamil">நிதித்துறை — புதுச்சேரி அரசு</div>
+          <div className="footer-contact">
+            <div className="footer-contact__item"><Phone size={12} /><span>0413 2233270</span></div>
+            <div className="footer-contact__item"><Mail size={12} /><span>usfin[at]py[dot]gov[dot]in</span></div>
+            <div className="footer-contact__item"><MapPin size={12} /><span>Puducherry – 605 001</span></div>
+          </div>
+        </div>
 
-    {/* Policy Links */}
-    <div className="flex flex-wrap justify-center gap-3 text-sm md:text-base mb-6">
-      <a href="#" className="hover:text-emerald-400">Accessibility Statement</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Copyright Policy</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Disclaimer</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Site Map</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Feedback</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Hyperlink Policy</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Privacy Policy</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Terms & Conditions</a>
-      <span>|</span>
-
-      <a href="#" className="hover:text-emerald-400">Terms of Use</a>
-      <span>|</span>
-      
-
-      <a href="#" className="hover:text-emerald-400">Help</a>
-    </div>
-
-    <br>
-    </br>
-
-    {/* Copyright */}
-    <p className="text-sm md:text-base mb-3">
-      Copyright © 2018 - All Rights Reserved - Official Website of
-      Finance Department, Government of Puducherry, India.
-    </p>
-
-    {/* Note */}
-    <p className="text-sm text-gray-300 mb-2">
-      Note: Content on this website is published and managed by
-      Finance Department, Government of Puducherry.
-    </p>
-
-    {/* Contact */}
-    <p className="text-sm text-gray-300 mb-1">
-      For any query regarding this website, please contact the web
-      information manager SHRI. Arjun Ramakrishnan,
-      Under Secretary(Finance), Finance Department, Puducherry.
-    </p>
-
-    <p className="text-sm text-gray-300 mb-5">
-      E-mail ID: usfin[at]py[dot]gov[dot]in |
-      Contact No: 0413 2233270
-    </p>
-
-    {/* Bottom Row */}
-    <div className="border-t border-gray-600 pt-4 flex flex-col md:flex-row items-center justify-between gap-4">
-
-      {/* Visitors */}
-      <p className="text-sm">
-        Site Visitors: <span className="font-semibold">431093</span>
-      </p>
-
-      {/* Social Icons */}
-      <div className="flex items-center gap-4">
-        <a
-          href="#"
-          className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center hover:scale-110 transition"
-        >
-          <i className="fab fa-facebook-f text-white"></i>
-        </a>{" "}
-        <a
-          href="#"
-          className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center hover:scale-110 transition"
-        >
-        <i className="fab fa-twitter text-white"></i>
-        </a>
+        {/* Link cols */}
+        {footerCols.map((col) => (
+          <div key={col.heading} className="footer-col">
+            <div className="footer-col__heading">{col.heading}</div>
+            <ul className="footer-col__list">
+              {col.links.map((lnk) => (
+                <li key={lnk}><a href="#" className="footer-col__link">{lnk}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
-    </div>
-  </div>
-</footer>
 
+      {/* Divider */}
+      <div className="footer-divider" />
+
+      {/* MIDDLE: dept name left, social right */}
+      <div className="footer-mid">
+        <div className="footer-mid__left">
+          
+        </div>
+        <div className="footer-mid__social">
+          {[
+            { label: "Facebook",  letter: "f",  cls: "fb" },
+            { label: "Twitter",   letter: "𝕏", cls: "tw" },
+            { label: "YouTube",   letter: "▶", cls: "yt" },
+            { label: "LinkedIn",  letter: "in", cls: "li" },
+          ].map(({ label, letter, cls }) => (
+            <a key={label} href="#" className={`footer-social-btn footer-social-btn--${cls}`} aria-label={label}>{letter}</a>
+          ))}
+        </div>
+      </div>
+
+      {/* BOTTOM: policy links + copyright */}
+      <div className="footer-bottom">
+        <div className="footer-copyright">
+          © 2018 – All Rights Reserved. Finance Department, Government of Puducherry, India.
+          &nbsp;|&nbsp; Content managed by Finance Department, Puducherry.
+        </div>
+      </div>
+    </footer>
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   MAIN APP
-   ════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   APP
+══════════════════════════════════════════ */
 export default function App() {
-  const [fontSize, setFontSize] = useState(16);
-
-  useEffect(() => {
-    document.documentElement.style.fontSize = `${fontSize}px`;
-  }, [fontSize]);
-
   return (
     <div className="app-root">
-  
       <Header />
-      <Navbar />
-
       <main id="main-content">
         <HeroSlider />
-
-        {/* What's New + Dignitaries */}
         <div className="two-col-section fade-section">
           <WhatsNew />
           <Dignitaries />
         </div>
-
-        {/* Administration + Budget */}
         <div className="admin-budget-section fade-section">
           <Administration />
           <Budget />
         </div>
-
         <InfoGrid />
         <PartnerLogos />
       </main>
-
       <Footer />
     </div>
   );
